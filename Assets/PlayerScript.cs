@@ -45,7 +45,7 @@ public class PlayerScript : MonoBehaviour
             onGround = Physics.SphereCast(transform.position, 0.8f, Vector3.down, out ground, 1.5f);
         Debug.Log(ground);
         if(onGround && Input.GetKeyDown(KeyCode.Space))
-            rigid.AddRelativeForce(0, 6000, 0);
+            rigid.AddRelativeForce(0, 10000, 0);
         if(Input.GetAxis("Horizontal") == 0 && Input.GetAxis("Vertical") == 0){
             if(speedBoost != Vector2.zero){
                 if(speedBoost.x >= 0)
