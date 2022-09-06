@@ -49,25 +49,25 @@ public class PlayerScript : MonoBehaviour
         if(Input.GetAxis("Horizontal") == 0 && Input.GetAxis("Vertical") == 0){
             if(speedBoost != Vector2.zero){
                 if(speedBoost.x >= 0)
-                    speedBoost = new Vector2(speedBoost.x - Mathf.Min(speedBoost.x, 10 * Time.deltaTime), speedBoost.y);
+                    speedBoost = new Vector2(speedBoost.x - Mathf.Min(speedBoost.x, 20 * Time.deltaTime), speedBoost.y);
                 else
-                    speedBoost = new Vector2(speedBoost.x - Mathf.Max(speedBoost.x, -10 * Time.deltaTime), speedBoost.y);
+                    speedBoost = new Vector2(speedBoost.x - Mathf.Max(speedBoost.x, -20 * Time.deltaTime), speedBoost.y);
                 if(speedBoost.y >= 0)
-                    speedBoost = new Vector2(speedBoost.x, speedBoost.y - Mathf.Min(speedBoost.y, 10 * Time.deltaTime));
+                    speedBoost = new Vector2(speedBoost.x, speedBoost.y - Mathf.Min(speedBoost.y, 20 * Time.deltaTime));
                 else
-                    speedBoost = new Vector2(speedBoost.x, speedBoost.y - Mathf.Max(speedBoost.y, -10 * Time.deltaTime));
+                    speedBoost = new Vector2(speedBoost.x, speedBoost.y - Mathf.Max(speedBoost.y, -20 * Time.deltaTime));
             }
         }
         if(onGround){
             if(speedBoost != Vector2.zero){
                 if(speedBoost.x >= 0)
-                    speedBoost = new Vector2(speedBoost.x - Mathf.Min(speedBoost.x, 6 * Time.deltaTime), speedBoost.y);
+                    speedBoost = new Vector2(speedBoost.x - Mathf.Min(speedBoost.x, 15 * Time.deltaTime), speedBoost.y);
                 else
-                    speedBoost = new Vector2(speedBoost.x - Mathf.Max(speedBoost.x, -6 * Time.deltaTime), speedBoost.y);
+                    speedBoost = new Vector2(speedBoost.x - Mathf.Max(speedBoost.x, -15 * Time.deltaTime), speedBoost.y);
                 if(speedBoost.y >= 0)
-                    speedBoost = new Vector2(speedBoost.x, speedBoost.y - Mathf.Min(speedBoost.y, 6 * Time.deltaTime));
+                    speedBoost = new Vector2(speedBoost.x, speedBoost.y - Mathf.Min(speedBoost.y, 15 * Time.deltaTime));
                 else
-                    speedBoost = new Vector2(speedBoost.x, speedBoost.y - Mathf.Max(speedBoost.y, -6 * Time.deltaTime));
+                    speedBoost = new Vector2(speedBoost.x, speedBoost.y - Mathf.Max(speedBoost.y, -15 * Time.deltaTime));
             }
         }
         if(Input.GetKey(KeyCode.LeftControl)){
