@@ -16,7 +16,7 @@ public class vertspeedindctxt : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        GetComponent<TextMeshProUGUI>().text = (int) player.speedBoost.y + "";
+        GetComponent<TextMeshProUGUI>().text = Mathf.Abs((int) player.speedBoost.y) + "";
         GetComponent<RectTransform>().anchoredPosition = new Vector2(663, -291 + ((speedIndc.transform.localScale.y / Mathf.Abs(speedIndc.transform.localScale.y)) * 30) + ((speedIndc.transform.localScale.y) * 100));
     }
 }

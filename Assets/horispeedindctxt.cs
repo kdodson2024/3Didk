@@ -16,7 +16,7 @@ public class horispeedindctxt : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        GetComponent<TextMeshProUGUI>().text = (int) player.speedBoost.x + "";
+        GetComponent<TextMeshProUGUI>().text = Mathf.Abs((int) player.speedBoost.x) + "";
         GetComponent<RectTransform>().anchoredPosition = new Vector2(667 + ((speedIndc.transform.localScale.x / Mathf.Abs(speedIndc.transform.localScale.x)) * 30) + ((speedIndc.transform.localScale.x) * 100), -301);
     }
 }
