@@ -17,11 +17,13 @@ public class PlayerScript : MonoBehaviour
     public GameObject rightTarget;
     public Vector3 toForward;
     public Vector3 toRight;
+    public Vector3 respPos;
     // Start is called before the first frame update
     void Start()
     {
         rigid = GetComponent<Rigidbody>();
         col = GetComponent<CapsuleCollider>();
+        respPos = transform.position;
     }
 
     // Update is called once per frame
@@ -44,6 +46,8 @@ public class PlayerScript : MonoBehaviour
         else
             onGround = Physics.SphereCast(transform.position, 0.8f, Vector3.down, out ground, 1.5f);
         Debug.Log(ground);
+        if(onGround && ground.collider.gameObject.tag == "death")
+            transform.position = respPos;
         if(onGround && Input.GetKeyDown(KeyCode.Space))
             rigid.AddRelativeForce(0, 10000, 0);
         if(Input.GetAxis("Horizontal") == 0 && Input.GetAxis("Vertical") == 0){
@@ -80,6 +84,12 @@ public class PlayerScript : MonoBehaviour
         else{
             col.height = 2.0f;
             col.center = new Vector3(0, 0, 0);
+            if(speedBoost != Vector2.zero){
+                if(speedBoost.x >= 0)
+                    speedBoost = new Vector2(speedBoost.x - Mathf.Min(speedBoost.x, 10 * Time.deltaTime), speedBoost.y);
+                else
+                    speedBoost = new Vector2(speedBoost.x - Mathf.Max(speedBoost.x, -10 * Time.deltaTime), speedBoost.y);
+            }
         }
         if(Input.GetKeyDown(KeyCode.E)){
             if(grabbedObj == null){
