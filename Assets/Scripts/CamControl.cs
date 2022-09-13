@@ -34,4 +34,10 @@ public class CamControl : MonoBehaviour
         Debug.Log("hit nothing");
         return null;
     }
+    public Vector3 shootBlackHole(Vector3 vectorToTarget){
+        Ray checkRay = new Ray (transform.position, vectorToTarget * 200f);
+        RaycastHit pointHit;
+        Physics.Raycast(checkRay, out pointHit, 200f);
+        return pointHit.point;
+    }
 }

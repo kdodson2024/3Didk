@@ -18,12 +18,19 @@ public class PlayerScript : MonoBehaviour
     public Vector3 toForward;
     public Vector3 toRight;
     public Vector3 respPos;
+    public Vector3 respRot;
+    public GameObject blackHoleVFX;
+    public float lastShot;
+    public GameObject gun;
+    public List<Vector4> blackHolePosTimes;
     // Start is called before the first frame update
     void Start()
     {
         rigid = GetComponent<Rigidbody>();
         col = GetComponent<CapsuleCollider>();
         respPos = transform.position;
+        respRot = transform.eulerAngles;
+        blackHolePosTimes = new List<Vector4>();
     }
 
     // Update is called once per frame
@@ -44,10 +51,12 @@ public class PlayerScript : MonoBehaviour
         if(Input.GetKey(KeyCode.LeftControl))
             onGround = Physics.Raycast(landingRay, out ground, 0.4f);
         else
-            onGround = Physics.SphereCast(transform.position, 0.8f, Vector3.down, out ground, 1.5f);
+            onGround = Physics.SphereCast(transform.position, 0.8f, Vector3.down, out ground, 0.8f);
         Debug.Log(ground);
-        if(onGround && ground.collider.gameObject.tag == "death")
+        if(onGround && ground.collider.gameObject.tag == "death"){
             transform.position = respPos;
+            transform.eulerAngles = respRot;
+        }
         if(onGround && Input.GetKeyDown(KeyCode.Space))
             rigid.AddRelativeForce(0, 10000, 0);
         if(Input.GetAxis("Horizontal") == 0 && Input.GetAxis("Vertical") == 0){
@@ -75,20 +84,40 @@ public class PlayerScript : MonoBehaviour
             }
         }
         if(Input.GetKey(KeyCode.LeftControl)){
-            col.height = 1.25f;
+            col.height = 1.5f;
             col.center = new Vector3(0, 0.375f, 0);
             if(!onGround){
                 speedBoost = new Vector2(speedBoost.x + Input.GetAxis("Horizontal") * 5 * Time.deltaTime, speedBoost.y + Input.GetAxis("Vertical") * 5 * Time.deltaTime);
             }
         }
         else{
-            col.height = 2.0f;
+            col.height = 2.5f;
             col.center = new Vector3(0, 0, 0);
             if(speedBoost != Vector2.zero){
                 if(speedBoost.x >= 0)
                     speedBoost = new Vector2(speedBoost.x - Mathf.Min(speedBoost.x, 10 * Time.deltaTime), speedBoost.y);
                 else
                     speedBoost = new Vector2(speedBoost.x - Mathf.Max(speedBoost.x, -10 * Time.deltaTime), speedBoost.y);
+            }
+        }
+        if(Input.GetMouseButtonDown(0) && Time.time - lastShot >= 0.42f){
+            Vector3 vectorToTarget = grabPoint.transform.position - mainCamera.transform.position;
+            GameObject instantiatedBlackhole = (GameObject)Instantiate(blackHoleVFX);
+            Vector3 blackHolePos = mainCamera.GetComponent<CamControl>().shootBlackHole(vectorToTarget);
+            instantiatedBlackhole.transform.position = blackHolePos;
+            lastShot = Time.time;
+            gun.GetComponent<Animator>().SetTrigger("Shoot");
+            Vector4 curPosAndTime = new Vector4(blackHolePos.x, blackHolePos.y, blackHolePos.z, lastShot);
+            blackHolePosTimes.Add(curPosAndTime);
+        }
+        foreach(Vector4 v in blackHolePosTimes){
+            if(Time.time - v.w >= 2.0f){
+                blackHolePosTimes.Remove(v);
+            }
+            else{
+                float dist = Vector3.Distance(transform.position, new Vector3(v.x, v.y, v.z));
+                Vector3 velToAdd = new Vector3((((v.x - transform.position.x) * 5) / (dist * dist)) / ((Time.time - v.w) * (Time.time - v.w) + 0.1f), (((v.y - transform.position.y) * 5) / (dist * dist)) / ((Time.time - v.w) * 20000 + 0.1f), (((v.z - transform.position.z) * 5) / (dist * dist)) / ((Time.time - v.w) * (Time.time - v.w) + 0.1f));
+                rigid.velocity += velToAdd;
             }
         }
         if(Input.GetKeyDown(KeyCode.E)){
