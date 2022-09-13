@@ -111,12 +111,12 @@ public class PlayerScript : MonoBehaviour
             blackHolePosTimes.Add(curPosAndTime);
         }
         foreach(Vector4 v in blackHolePosTimes){
-            if(Time.time - v.w >= 2.0f){
+            if(Time.time - v.w >= 1.125f){
                 blackHolePosTimes.Remove(v);
             }
             else{
                 float dist = Vector3.Distance(transform.position, new Vector3(v.x, v.y, v.z));
-                Vector3 velToAdd = new Vector3((((v.x - transform.position.x) * 5) / (dist * dist)) / ((Time.time - v.w) * (Time.time - v.w) + 0.1f), (((v.y - transform.position.y) * 5) / (dist * dist)) / ((Time.time - v.w) * 20000 + 0.1f), (((v.z - transform.position.z) * 5) / (dist * dist)) / ((Time.time - v.w) * (Time.time - v.w) + 0.1f));
+                Vector3 velToAdd = new Vector3((((v.x - transform.position.x) * 20) / (dist * dist)) / ((Time.time - v.w) * (Time.time - v.w) + 0.1f), (((v.y - transform.position.y) * 20) / (dist * dist)) / ((Time.time - v.w) * 20000 + 0.1f), (((v.z - transform.position.z) * 20) / (dist * dist)) / ((Time.time - v.w) * (Time.time - v.w) + 0.1f));
                 rigid.velocity += velToAdd;
             }
         }
