@@ -38,6 +38,8 @@ public class CamControl : MonoBehaviour
         Ray checkRay = new Ray (transform.position, vectorToTarget * 200f);
         RaycastHit pointHit;
         Physics.Raycast(checkRay, out pointHit, 200f);
+        Debug.Log("pos: " + pointHit.point);
+        Debug.Log("object: " + pointHit.collider.gameObject.name);
         return pointHit.point;
     }
 }

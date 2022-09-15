@@ -23,6 +23,10 @@ public class PlayerScript : MonoBehaviour
     public float lastShot;
     public GameObject gun;
     public List<Vector4> blackHolePosTimes;
+    public GameObject blackHoleRocket;
+    public GameObject shootPoint;
+    public GameObject gunStuffToPickUp;
+    public bool haveGun;
     // Start is called before the first frame update
     void Start()
     {
@@ -31,11 +35,13 @@ public class PlayerScript : MonoBehaviour
         respPos = transform.position;
         respRot = transform.eulerAngles;
         blackHolePosTimes = new List<Vector4>();
+        haveGun = false;
     }
 
     // Update is called once per frame
     void Update()
     {
+        gun.SetActive(haveGun);
         // rigid.velocity = new Vector3(rigid.velocity.x, rigid.velocity.y, Input.GetAxis("Vertical") * 5);
         rigid.velocity = new Vector3(0, rigid.velocity.y, 0);
         toForward = forwardTarget.transform.position - transform.position;
@@ -52,7 +58,7 @@ public class PlayerScript : MonoBehaviour
             onGround = Physics.Raycast(landingRay, out ground, 0.4f);
         else
             onGround = Physics.SphereCast(transform.position, 0.8f, Vector3.down, out ground, 0.8f);
-        Debug.Log(ground);
+        //Debug.Log(ground);
         if(onGround && ground.collider.gameObject.tag == "death"){
             transform.position = respPos;
             transform.eulerAngles = respRot;
@@ -100,15 +106,20 @@ public class PlayerScript : MonoBehaviour
                     speedBoost = new Vector2(speedBoost.x - Mathf.Max(speedBoost.x, -10 * Time.deltaTime), speedBoost.y);
             }
         }
-        if(Input.GetMouseButtonDown(0) && Time.time - lastShot >= 0.42f){
+        if(Input.GetMouseButtonDown(0) && Time.time - lastShot >= 0.42f && haveGun){
             Vector3 vectorToTarget = grabPoint.transform.position - mainCamera.transform.position;
-            GameObject instantiatedBlackhole = (GameObject)Instantiate(blackHoleVFX);
             Vector3 blackHolePos = mainCamera.GetComponent<CamControl>().shootBlackHole(vectorToTarget);
-            instantiatedBlackhole.transform.position = blackHolePos;
-            lastShot = Time.time;
-            gun.GetComponent<Animator>().SetTrigger("Shoot");
-            Vector4 curPosAndTime = new Vector4(blackHolePos.x, blackHolePos.y, blackHolePos.z, lastShot);
-            blackHolePosTimes.Add(curPosAndTime);
+            if(blackHolePos != Vector3.zero){
+                GameObject instantiatedBlackhole = (GameObject)Instantiate(blackHoleVFX);
+                instantiatedBlackhole.transform.position = blackHolePos;
+                GameObject instantiatedRocket = (GameObject)Instantiate(blackHoleRocket);
+                instantiatedRocket.transform.position = shootPoint.transform.position;
+                instantiatedRocket.transform.rotation = shootPoint.transform.rotation;
+                lastShot = Time.time;
+                gun.GetComponent<Animator>().SetTrigger("Shoot");
+                Vector4 curPosAndTime = new Vector4(blackHolePos.x, blackHolePos.y, blackHolePos.z, lastShot);
+                blackHolePosTimes.Add(curPosAndTime);
+            }
         }
         foreach(Vector4 v in blackHolePosTimes){
             if(Time.time - v.w >= 1.125f){
@@ -116,7 +127,7 @@ public class PlayerScript : MonoBehaviour
             }
             else{
                 float dist = Vector3.Distance(transform.position, new Vector3(v.x, v.y, v.z));
-                Vector3 velToAdd = new Vector3((((v.x - transform.position.x) * 20) / (dist * dist)) / ((Time.time - v.w) * (Time.time - v.w) + 0.1f), (((v.y - transform.position.y) * 20) / (dist * dist)) / ((Time.time - v.w) * 20000 + 0.1f), (((v.z - transform.position.z) * 20) / (dist * dist)) / ((Time.time - v.w) * (Time.time - v.w) + 0.1f));
+                Vector3 velToAdd = new Vector3((((v.x - transform.position.x) * 20) / (dist * dist + dist)) / ((Time.time - v.w) * (Time.time - v.w) + 0.1f), (((v.y - transform.position.y) * 20) / (dist * dist + dist)) / ((Time.time - v.w) * 20000 + 0.1f), (((v.z - transform.position.z) * 20) / (dist * dist + dist)) / ((Time.time - v.w) * (Time.time - v.w) + 0.1f));
                 rigid.velocity += velToAdd;
             }
         }
@@ -133,6 +144,14 @@ public class PlayerScript : MonoBehaviour
             // grabbedObj.transform.parent = grabPoint.transform;
             // grabbedObj.transform.position = grabPoint.transform.position;
             grabbedObj.GetComponent<Rigidbody>().velocity = (grabPoint.transform.position - grabbedObj.transform.position) * 10;
+        }
+        rigid.velocity = new Vector3(rigid.velocity.x, Mathf.Clamp(rigid.velocity.y, -1000, 25), rigid.velocity.z);
+    }
+    public void OnTriggerEnter(Collider collided){
+        if(collided.gameObject.tag == "getGun"){
+            collided.enabled = false;
+            gunStuffToPickUp.SetActive(false);
+            haveGun = true;
         }
     }
 }
