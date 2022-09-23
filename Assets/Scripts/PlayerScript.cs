@@ -121,9 +121,10 @@ public class PlayerScript : MonoBehaviour
                 blackHolePosTimes.Add(curPosAndTime);
             }
         }
+        int removeThisFrame = -1;
         foreach(Vector4 v in blackHolePosTimes){
             if(Time.time - v.w >= 1.125f){
-                blackHolePosTimes.Remove(v);
+                removeThisFrame = blackHolePosTimes.IndexOf(v);
             }
             else{
                 float dist = Vector3.Distance(transform.position, new Vector3(v.x, v.y, v.z));
@@ -131,6 +132,8 @@ public class PlayerScript : MonoBehaviour
                 rigid.velocity += velToAdd;
             }
         }
+        if(removeThisFrame != -1)
+            blackHolePosTimes.RemoveAt(removeThisFrame);
         if(Input.GetKeyDown(KeyCode.E)){
             if(grabbedObj == null){
                 Vector3 vectorToTarget = grabPoint.transform.position - mainCamera.transform.position;
@@ -152,6 +155,10 @@ public class PlayerScript : MonoBehaviour
             collided.enabled = false;
             gunStuffToPickUp.SetActive(false);
             haveGun = true;
+        }
+        if(collided.gameObject.tag == "death"){
+            transform.position = respPos;
+            transform.eulerAngles = respRot;
         }
     }
 }
