@@ -1,2 +1,2 @@
 Random personal project.
-Open source because why not?
+It's pen source because why not?
